@@ -42,7 +42,15 @@ def run_net1(network, inp):
 
 # Output a graphviz visualization of the network
 def net_to_dot(network):
-    return None
+    (isz,ns) = network
+    print('digraph { ')
+    for i in range(isz):
+        print(f'  n{i} [ color=blue ]')
+    # todo: maybe color all pure output (not in any index) nodes red?
+    for i, (ix, ps) in enumerate(ns):
+        for x in ix:
+            print(f'  n{x} -> n{i+isz}')
+    print('}')        
 
 # Generate a random input and run a network
 def simulate(network):
@@ -64,7 +72,7 @@ def bindigits(x, sz):
         out[sz-1-i] = x%2
         x = x//2
     return out
-                    
+
 # Testing:
 # iterate(mknet(3,6,3))
-
+net_to_dot(mknet(10,10,3))
