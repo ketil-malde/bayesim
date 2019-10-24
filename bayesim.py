@@ -33,12 +33,12 @@ def mknet(input_size, output_size, width, entropy=0):
 # Simulate a run of 'network' given input data 'inp'
 def run_net1(network, inp):
     (input_size, ns) = network
-    if len(inp) != input_size: raise Exception(f"Input size is {len(inp)}, network requires {ins}.")
-    out = np.empty(input_size+len(ns))
-    out[:input_size] = inp
+    if len(inp) != input_size: raise Exception(f"Input size is {len(inp)}, network requires {input_size}.")
+    outp = np.empty(input_size+len(ns))
+    outp[:input_size] = inp
     for i, n in enumerate(ns):
-        out[i+input_size] = np.random.binomial(1, apply_node(out,n))
-    return out
+        outp[i+input_size] = np.random.binomial(1, apply_node(outp,n))
+    return outp
 
 # Output a graphviz visualization of the network
 def net_to_dot(network):
@@ -47,9 +47,24 @@ def net_to_dot(network):
 # Generate a random input and run a network
 def simulate(network):
     (input_size, _) = network
-    inp = np.random.choice([0,1], size=input_size)
-    return run_net1(network,inp)
+    return run_net1(network,np.random.choice([0,1], size=input_size))
 
-# Testing
-# n = mknode(4,2,1)
-# apply_node_prob(np.array([0,1,0,1], n)
+# Iterate a network over all possible inputs
+def iterate(network):
+    (input_size, _) = network
+    outp = []
+    for i in range(2**input_size):
+        outp.append(run_net1(network,bindigits(i,input_size)))
+    return outp
+
+# Convert an integer 'x' to an array of binary digits
+def bindigits(x, sz):
+    out = np.empty(shape=sz)
+    for i in range(sz):
+        out[sz-1-i] = x%2
+        x = x//2
+    return out
+                    
+# Testing:
+# iterate(mknet(3,6,3))
+
