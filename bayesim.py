@@ -6,8 +6,8 @@ import numpy as np
 # 'width' is w, i.e. the number of inputs to each node
 # 'entropy' is the alpha/beta parameter used to draw probabilities from a beta distribution (ie., not to be confused with actual entropy)
 # An 'entropy' of zero means a deterministic network, where the same input always give the same outputs in each node.
-def mknode(inputwidth, width, entropy=0):
-    ix = np.random.randint(inputwidth, size=width)
+def mknode(inputwidth, width, first=0, entropy=0):
+    ix = first+np.random.randint(inputwidth, size=width)
     if entropy == 0:
         ps = np.random.choice([0,1], size=2**width)
     else:
@@ -28,6 +28,18 @@ def mknet(input_size, output_size, width, entropy=0):
     net = []
     for i in range(input_size, input_size+output_size):
         net.append(mknode(i, width, entropy))
+    return (input_size, net)
+
+# ignore entropy for now
+def mklayerednet(input_size, layerlist, entropy=0):
+    net = []
+    prev_size = input_size
+    prev_start = 0
+    for size, width in layerlist:
+        for n in range(size):
+            net.append(mknode(prev_size, width, first=prev_start, entropy=entropy))
+        prev_size = size
+        prev_start = prev_start + size
     return (input_size, net)
 
 # Simulate a run of 'network' given input data 'inp'
@@ -55,7 +67,7 @@ def net_to_dot(network):
 # Generate a random input and run a network
 def simulate(network):
     (input_size, _) = network
-    return run_net1(network,np.random.choice([0,1], size=input_size))
+    return run_net1(network, np.random.choice([0,1], size=input_size))
 
 # Iterate a network over all possible inputs
 def iterate(network):
@@ -75,4 +87,4 @@ def bindigits(x, sz):
 
 # Testing:
 # iterate(mknet(3,6,3))
-net_to_dot(mknet(10,10,3))
+## net_to_dot(mklayerednet(10,[(10,2),(10,3)]))
