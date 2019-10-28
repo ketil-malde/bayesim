@@ -34,17 +34,30 @@ def correlate(data):
                 res[i,j] = 0
     return res
 
-# Testing:    
-# correlate(np.array([[1,0],[0,1],[1,1]]))
+# Testing:
+# use: python3 experiment.py | dot -Tpdf -onet.pdf
 
 import matplotlib.pyplot as plt
 import seaborn as sns
+import sys
 
-x = np.array(b.iterate(b.mklayerednet(10,[(10,2),(10,3),(10,3)])))
+inputs = 10
+layerszs = [10, 5, 1]
+widths = [2, 3, 5]
+n = b.mklayerednet(inputs, zip(layerszs, widths))
+b.net_to_dot(n)
+sys.stdout.flush()
+x = np.array(b.iterate(n))
 a = correlate(x)
-sns.heatmap(a[:10], cmap='coolwarm', linewidth=0.5)
-# plt.xtics([9.5,19.5]) how do I do this?
-plt.grid(True)
+
+fig, axn = plt.subplots(1, len(layerszs)+1, sharex=False, sharey='row')
+# plt.subplots_adjust(left=0, right=0.01)
+sns.heatmap(a[:inputs,:inputs], ax=axn.flat[0], cmap='coolwarm', linewidth=0.5, vmin=-1, vmax=1, cbar=False)
+x = inputs
+for i, w in enumerate(layerszs):
+    sns.heatmap(a[:inputs, x:x+w], ax=axn.flat[i+1], cmap='coolwarm', linewidth=0.5, vmin=-1, vmax=1, cbar=True if i+1==len(layerszs) else False)
+    x=x+w
+fig.tight_layout()
 plt.show()
 
 # for n networks of given complexity

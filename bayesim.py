@@ -11,7 +11,7 @@ Node = namedtuple('Node',['inputs', 'probabilities'])
 # An 'entropy' of zero means a deterministic network, where the same input always give the same outputs in each node.
 
 def mknode(inputwidth, width, first=0, entropy=0):
-    ix = first+np.random.randint(inputwidth, size=width)
+    ix = np.random.randint(inputwidth, size=width) + first
     if entropy == 0:
         ps = np.random.choice([0,1], size=2**width)
     else:
