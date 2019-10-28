@@ -43,8 +43,8 @@ def mklayerednet(input_size, layerlist, entropy=0):
     for size, width in layerlist:
         for n in range(size):
             net.nodes.append(mknode(prev_size, width, first=prev_start, entropy=entropy))
+        prev_start = prev_start + prev_size
         prev_size = size
-        prev_start = prev_start + size
     return net
 
 # Simulate a run of 'network' given input data 'inp'
