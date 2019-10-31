@@ -42,23 +42,36 @@ import seaborn as sns
 import sys
 
 inputs = 10
-layerszs = [10, 5, 1]
-widths = [2, 3, 5]
+layerszs = [10, 10, 5, 1]
+widths = [2, 3, 3, 5]
 n = b.mklayerednet(inputs, zip(layerszs, widths))
 b.net_to_dot(n)
 sys.stdout.flush()
 x = np.array(b.iterate(n))
 a = correlate(x)
 
+# Calculate actual effect of an input
+# i.e. for all inputs, how many cases does flipping input i change final outcome
+# Print the fraction of cases where input i flips the outcome
+for i in range(inputs):
+    x0i = x[:,i]==0
+    x0 = x[x0i]
+    x1i = x[:,i]==1
+    x1 = x[x1i]
+    z = x0[:,-1] == x1[:,-1]
+    print(a[i,-1], 1-sum(z)/2**(inputs-1), file=sys.stderr)
+
 fig, axn = plt.subplots(1, len(layerszs)+1, sharex=False, sharey='row')
 # plt.subplots_adjust(left=0, right=0.01)
 sns.heatmap(a[:inputs,:inputs], ax=axn.flat[0], cmap='coolwarm', linewidth=0.5, vmin=-1, vmax=1, cbar=False)
-x = inputs
+tmp = inputs
 for i, w in enumerate(layerszs):
-    sns.heatmap(a[:inputs, x:x+w], ax=axn.flat[i+1], cmap='coolwarm', linewidth=0.5, vmin=-1, vmax=1, cbar=True if i+1==len(layerszs) else False)
-    x=x+w
+    sns.heatmap(a[:inputs, tmp:tmp+w], ax=axn.flat[i+1], cmap='coolwarm', linewidth=0.5,
+                vmin=-1, vmax=1, cbar=True if i+1==len(layerszs) else False, annot=True if i+1==len(layerszs) else False)
+    tmp=tmp+w
 fig.tight_layout()
 plt.show()
+
 
 # for n networks of given complexity
 #   run network x times to generate data
