@@ -6,7 +6,7 @@ import numpy as np
 #   learn output using {SVM, RF, KNN, ANN} (how to optimize parameters?)
 #   test accuracy on iteration over all data
 # maybe also test with layer [1] as input (non-uniform distribution)?
-classifiers = ['SVM', 'KNN'] # , 'RF', 'KNN', 'ANN']
+classifiers = ['SVM', 'KNN', 'RF', 'ANN']
 
 def evalnet(network, times, iters):
     res = {}
@@ -27,12 +27,18 @@ def evalnet(network, times, iters):
 
 from sklearn import svm
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neural_network import MLPClassifier
 
 def learn(cls, xs, ys):
     if cls=='SVM':
         c = svm.SVC(gamma='scale')
     elif cls == 'KNN':
         c = KNeighborsClassifier()
+    elif cls == 'RF':
+        c = RandomForestClassifier(n_estimators=10)
+    elif cls == 'ANN':
+        c = MLPClassifier(solver='lbfgs', alpha=1e-5, hidden_layer_sizes=(6, 4), random_state=1)
     else:
         raise Exception(f'No such classifier: {cls}')
     return c.fit(xs, ys)
