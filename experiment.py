@@ -6,9 +6,12 @@ import numpy as np
 #   learn output using {SVM, RF, KNN, ANN} (how to optimize parameters?)
 #   test accuracy on iteration over all data
 # maybe also test with layer [1] as input (non-uniform distribution)?
-classifiers = ['SVM'] # , 'RF', 'KNN', 'ANN']
+classifiers = ['SVM', 'KNN'] # , 'RF', 'KNN', 'ANN']
 
 def evalnet(network, times, iters):
+    res = {}
+    for c in classifiers:
+        res[c]=[]
     for i in range(times):
         simdata = b.simulate(network, iterations=iters)
         # x are inputs, y is the last node output
@@ -18,22 +21,26 @@ def evalnet(network, times, iters):
         for c in classifiers:
             # learn the classifiers on data
             cls = learn(c, xs, ys)
-            res = test(cls, test_xs, test_ys)
-    return None
+            acc = test(cls, test_xs, test_ys)
+            res[c].append(acc)
+    return res
 
 from sklearn import svm
+from sklearn.neighbors import KNeighborsClassifier
 
 def learn(cls, xs, ys):
     if cls=='SVM':
         c = svm.SVC(gamma='scale')
-        return c.fit(xs, ys)
+    elif cls == 'KNN':
+        c = KNeighborsClassifier()
     else:
         raise Exception(f'No such classifier: {cls}')
+    return c.fit(xs, ys)
 
 # return accuracy of classifier    
 def test(cls, xs, ys):
     return sum(cls.predict(xs) == ys)/len(xs)
 
-
-evalnet(b.mklayerednet(10, [(10,2),(5,3),(1,5)]), 2, 100)
+r = evalnet(b.mklayerednet(10, [(10,2),(5,3),(1,5)]), 10, 100)
+print(r)
 
