@@ -79,9 +79,7 @@ def build_network(cf):
 import json
 
 def print_conf_res(conf, res):
-    #print(conf['layer_depth'], conf['layer_width'], conf['node_width'], conf['entropy'], conf['data_size'], res)
-    tmp = {**conf, **res}
-    print(tmp)
+    print(json.dumps({**conf, **res}))
 
 def run(x):
     for _ in range(x):
