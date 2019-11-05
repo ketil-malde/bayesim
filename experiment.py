@@ -76,9 +76,12 @@ def build_network(cf):
     # print(layers)
     return b.mklayerednet(insize, layerlist=layers, entropy=cf['entropy'])
 
+import json
+
 def print_conf_res(conf, res):
     #print(conf['layer_depth'], conf['layer_width'], conf['node_width'], conf['entropy'], conf['data_size'], res)
-    print(conf, res)
+    tmp = {**conf, **res}
+    print(tmp)
 
 def run(x):
     for _ in range(x):
@@ -92,4 +95,6 @@ def run(x):
 # print(cf)
 # net = build_network(cf)
 # print(net)
-run(10)
+import sys
+
+run(int(sys.argv[1]))
