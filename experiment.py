@@ -44,10 +44,51 @@ def learn(cls, xs, ys):
         raise Exception(f'No such classifier: {cls}')
     return c.fit(xs, ys)
 
-# return accuracy of classifier    
+# return accuracy of classifier
 def test(cls, xs, ys):
     return sum(cls.predict(xs) == ys)/len(xs)
 
-r = evalnet(b.mklayerednet(10, [(10,2),(5,3),(1,5)]), 10, 100)
-print(r)
+# r = evalnet(b.mklayerednet(10, [(10,2),(5,3),(1,5)]), 10, 100)
+# print(r)
 
+# Run experiments
+
+from random import randint, choice
+
+# Generate a config as a dictionary
+def gen_config():
+    conf = {}
+    conf['layer_depth'] = randint(3, 12)
+    conf['layer_width'] = randint(6, 40)
+    conf['node_width']  = randint(2, 5)
+    conf['entropy']     = choice([0, 0.1, 0.25, 0.5, 0.75, 1.0, 1.5, 2.0, 4.0])
+    conf['data_size']   = round(10**(randint(8, 16)/4))  # 100..10K data points
+    return conf
+
+def build_network(cf):
+    insize = cf['layer_width']
+    layers = []
+    w = insize
+    for i in range(cf['layer_depth']-1):
+        factor = 1-i/cf['layer_depth']
+        layers.append((round(insize*factor), cf['node_width']))
+    layers.append((1, cf['node_width']))
+    print(layers)
+    return b.mklayerednet(insize, layerlist=layers, entropy=cf['entropy'])
+
+def print_conf_res(conf, res):
+    print(conf['layer_depth'], conf['layer_width'], conf['node_width'], conf['entropy'], conf['data_size'], res)
+
+def run(x):
+    for _ in range(x):
+        cf = gen_config()
+        print(cf)
+        net = build_network(cf)
+        res = evalnet(net, 10, cf['data_size'])
+        print_conf_res(cf, res)
+
+# cf = gen_config()
+# print(cf)
+# net = build_network(cf)
+# print(net)
+run(10)
