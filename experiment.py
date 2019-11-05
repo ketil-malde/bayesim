@@ -16,6 +16,7 @@ def evalnet(network, times, iters):
         simdata = b.simulate(network, iterations=iters)
         # x are inputs, y is the last node output
         xs, ys = simdata[:, :network.input_size], simdata[:, -1]
+        if len(np.unique(ys)) < 2: continue
         testdata = b.simulate(network, iterations=1000)
         test_xs, test_ys = testdata[:, :network.input_size], testdata[:, -1]
         for c in classifiers:
