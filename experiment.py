@@ -73,18 +73,19 @@ def build_network(cf):
         factor = 1-i/cf['layer_depth']
         layers.append((round(insize*factor), cf['node_width']))
     layers.append((1, cf['node_width']))
-    print(layers)
+    # print(layers)
     return b.mklayerednet(insize, layerlist=layers, entropy=cf['entropy'])
 
 def print_conf_res(conf, res):
-    print(conf['layer_depth'], conf['layer_width'], conf['node_width'], conf['entropy'], conf['data_size'], res)
+    #print(conf['layer_depth'], conf['layer_width'], conf['node_width'], conf['entropy'], conf['data_size'], res)
+    print(conf, res)
 
 def run(x):
     for _ in range(x):
         cf = gen_config()
-        print(cf)
+        # print(cf)
         net = build_network(cf)
-        res = evalnet(net, 10, cf['data_size'])
+        res = evalnet(net, 1, cf['data_size'])
         print_conf_res(cf, res)
 
 # cf = gen_config()
